@@ -38,7 +38,7 @@
 
         } else {
 
-            $message = "Could not retreive any squads";
+            $message .= "\nCould not retreive any squads";
 
         }
 
@@ -52,16 +52,28 @@
 
     if ($result = $conn->query($invitation_query)) {
 
-        while ($row = $result->fetch_assoc()) {
+        if ($result->num_rows > 0) {
 
-            $squad_invitations[] = $row;
+            while ($row = $result->fetch_assoc()) {
 
+                $squad_inv = array();
+                foreach ($row as $key => $val) {
+                    $squad_inv[$key] = $val;
+                }
+                
+                $squad_invitations[] = $squad_inv;
+
+            }
+
+            $success = true;
+
+        } else {
+            $message .= "\nCould not retrieve any squad invitations";
         }
 
-        $success = true;
 
     } else {
-        $message .= "\nCould not retrieve squad_invitations";
+        $message .= "\nCould not execute query";
     }
 
     print_r(
