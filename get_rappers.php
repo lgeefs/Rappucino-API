@@ -1,64 +1,44 @@
 <?php
 
-    require_once('conn.php');
+    require_once('functions/rappers.php');
 
-    $rapper_id = $_GET['rapper_id'];
-    $search_term = isset($_GET['query']) ? $_GET['query'] : '';
+    $function = isset($_GET['function']) ? $_GET['function'] : '';
 
-    $search_query = !empty($search_term) ? " WHERE (name LIKE '%".$search_term."%' OR handle LIKE '%".$search_term."%') AND id != '$rapper_id'" : '';
+    $rapper_id = $_GET['rapper_id'] ?? "";
+    $squad_id = $_GET['squad_id'] ?? "";
+    $search_term = $_GET['search_term'] ?? "";
 
-    $query = "SELECT * FROM `rappers`".$search_query;
+    // Error function to start; variable is updated upon successful response
+    $response = json_encode(array(
+        "rappers" => [],
+        "success" => false,
+        "message" => "Missing param!"
+    ));
 
-    $success = false;
-    $message = '';
-    $rappers = [];
+    if ( $function == "from_id" ) {
 
-    //if query executes:
-    if ($queryResult = $conn->query($query)) {
-
-        //if query returns any results:
-        if ($queryResult->num_rows > 0) {
-
-            while ($row = $queryResult->fetch_assoc()) {
-
-                $rapper_id = $row['id'];
-                $name = $row['name'];
-                $handle = $row['handle'];
-                $picture_url = $row['picture_url'];
-
-                $rapper = array(
-                    "id" => $rapper_id,
-                    "name" => $name,
-                    "handle" => $handle,
-                    "picture_url" => $picture_url
-                );
-
-                $rappers[] = $rapper;
-
-            }
-                
-            $success = true;
-
-        } else {
-
-            $message = "Could not retrieve any rappers";
-
+        if ( !empty($rapper_id) ) {
+            $response = get_rapper_from_id($rapper_id);
         }
 
-    } else {
+    } else if ( $function == "from_squad_id" ) {
 
-        $message = "shit! db is frigged";
+        if ( !empty($squad_id) ) {
+            $response = get_rappers_from_squad_id($squad_id);
+        }
+
+    } else if ( $function == "from_query" ) {
+
+        if ( !empty($rapper_id) && !empty($search_term) ) {
+            $response = get_rappers_from_query($search_term, $rapper_id);
+        }
+
+    } else if ( $function == "all" ) {
+
+        $response = get_all_rappers();
 
     }
 
-    print_r(
-        json_encode(
-            array(
-                "rappers" => $rappers,
-                "success" => $success,
-                "message" => $message
-            )
-        )
-    );
+    print_r($response);
 
 ?>

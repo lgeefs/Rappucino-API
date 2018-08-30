@@ -1,90 +1,44 @@
 <?php
 
-    require_once('conn.php');
+    require_once('functions/squads.php');
 
-    $rapper_id = $_GET['rapper_id'];
+    $function = isset($_GET['function']) ? $_GET['function'] : '';
 
-    $query = "SELECT * FROM `squads` WHERE id IN
-    (SELECT squad_id FROM `squad_rappers` WHERE rapper_id = '$rapper_id')";
+    $rapper_id = $_GET['rapper_id'] ?? "";
+    $squad_id = $_GET['squad_id'] ?? "";
+    $search_term = $_GET['search_term'] ?? "";
 
-    $success = false;
-    $message = '';
-    $squads = [];
-    $squad_invitations = [];
+    // Error function to start; variable is updated upon successful response
+    $response = json_encode(array(
+        "squads" => [],
+        "success" => false,
+        "message" => "Missing param!"
+    ));
 
-    //if query executes:
-    if ($queryResult = $conn->query($query)) {
+    if ( $function == "from_id" ) {
 
-        //if query returns any results:
-        if ($queryResult->num_rows > 0) {
-
-            while ($row = $queryResult->fetch_assoc()) {
-
-                $squad_id = $row['id'];
-                $name = $row['name'];
-                $picture_url = $row['picture_url'];
-
-                $squad = array(
-                    "id" => $squad_id,
-                    "name" => $name,
-                    "picture_url" => $picture_url
-                );
-
-                $squads[] = $squad;
-
-            }
-                
-            $success = true;
-
-        } else {
-
-            $message .= "\nCould not retreive any squads";
-
+        if ( !empty($squad_id) ) {
+            $response = get_squad_from_id($squad_id);
         }
 
-    } else {
+    } else if ( $function == "from_rapper_id" ) {
 
-        $message = "shit! db is frigged";
+        if ( !empty($rapper_id) ) {
+            $response = get_squad_from_rapper_id($rapper_id);
+        }
+
+    } else if ( $function == "from_query" ) {
+
+        if ( !empty($search_term) ) {
+            $response = get_squads_from_query($search_term);
+        }
+
+    } else if ( $function == "all" ) {
+
+        $response = get_all_squads();
 
     }
 
-    $invitation_query = "SELECT * FROM `squad_invitations` WHERE to_rapper_id = '$rapper_id'";
-
-    if ($result = $conn->query($invitation_query)) {
-
-        if ($result->num_rows > 0) {
-
-            while ($row = $result->fetch_assoc()) {
-
-                $squad_inv = array();
-                foreach ($row as $key => $val) {
-                    $squad_inv[$key] = $val;
-                }
-                
-                $squad_invitations[] = $squad_inv;
-
-            }
-
-            $success = true;
-
-        } else {
-            $message .= "\nCould not retrieve any squad invitations";
-        }
-
-
-    } else {
-        $message .= "\nCould not execute query";
-    }
-
-    print_r(
-        json_encode(
-            array(
-                "squads" => $squads,
-                "squad_invitations" => $squad_invitations,
-                "success" => $success,
-                "message" => $message
-            )
-        )
-    );
+    print_r($response);
 
 ?>

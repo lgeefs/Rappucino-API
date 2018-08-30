@@ -1,66 +1,49 @@
 <?php
 
-    require_once('conn.php');
+    require_once('functions/recordings.php');
+
+    $function = isset($_GET['function']) ? $_GET['function'] : '';
 
     $rapper_id = $_GET['rapper_id'] ?? "";
+    $squad_id = $_GET['squad_id'] ?? "";
 
-    $query = "SELECT * FROM `recordings`";
-    $query .= !empty($rapper_id) ? "WHERE from_rapper_id='$rapper_id'" : "";
+    // Error function to start; variable is updated upon successful response
+    $response = json_encode(array(
+        "recordings" => [],
+        "success" => false,
+        "message" => "Missing param!"
+    ));
 
-    $success = false;
-    $message = '';
-    $recordings = [];
+    if ( $function == "from_rapper_id" ) {
 
-    //if query executes:
-    if ($queryResult = $conn->query($query)) {
-
-        //if query returns any results:
-        if ($queryResult->num_rows > 0) {
-
-            while ($row = $queryResult->fetch_assoc()) {
-
-                $recording_id = $row['id'];
-                $to_squad_id = $row['to_squad_id'];
-                $from_rapper_id = $row['from_rapper_id'];
-                $to_rapper_id = $row['to_rapper_id'];
-                $recording_url = $row['recording_url'];
-                $date_uploaded = $row['date_uploaded'];
-
-                $recording = array(
-                    "recording_id" => $recording_id,
-                    "to_squad_id" => $to_squad_id,
-                    "from_rapper_id" => $from_rapper_id,
-                    "to_rapper_id" => $to_rapper_id,
-                    "recording_url" => $recording_url,
-                    "creation_date" => $date_uploaded
-                );
-
-                $recordings[] = $recording;
-
-            }
-                
-            $success = true;
-
-        } else {
-
-            $message = "Could not retrieve any recordings";
-
+        if ( !empty($rapper_id) ) {
+            $response = get_recordings_from_rapper_id($rapper_id);
         }
 
-    } else {
+    } else if ( $function == "to_rapper_id" ) {
 
-        $message = "shit! db is frigged";
+        if ( !empty($rapper_id) ) {
+            $response = get_recordings_to_rapper_id($rapper_id);
+        }
+
+    } else if ( $function == "from_squad_id" ) {
+
+        if ( !empty($squad_id) ) {
+            $response = get_recordings_from_squad_id($squad_id);
+        }
+
+    } else if ( $function == "to_squad_id" ) {
+
+        if ( !empty($squad_id) ) {
+            $response = get_recordings_to_squad_id($squad_id);
+        }
+
+    } else if ( $function == "all" ) {
+
+        $response = get_all_recordings();
 
     }
 
-    print_r(
-        json_encode(
-            array(
-                "recordings" => $recordings,
-                "success" => $success,
-                "message" => $message
-            )
-        )
-    );
+    print_r($response);
 
 ?>
