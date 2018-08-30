@@ -41,7 +41,7 @@
 
         } else {
 
-            $message = "Could not retreive any rappers";
+            $message = "Could not retrieve any rappers";
 
         }
 

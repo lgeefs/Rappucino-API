@@ -4,14 +4,16 @@
 
 	header('Content-Type: application/json');
 
+	$name = isset($_POST['name']) ? $_POST['name'] : '';
 	$to_squad_id = isset($_POST['to_squad_id']) ? $_POST['to_squad_id'] : '';
 	$from_rapper_id = isset($_POST['from_rapper_id']) ? $_POST['from_rapper_id'] : '';
 	$to_rapper_id = isset($_POST['to_rapper_id']) ? $_POST['to_rapper_id'] : '';
+	$duration = isset($_POST['duration']) ? $_POST['duration'] : '';
 
 	$success = false;
 	$message = "";
 
-	$target_dir = "/Applications/MAMP/htdocs/rappucino/recordings/".$from_rapper_id."/".date("Y-m-d");
+	$target_dir = "recordings/".$from_rapper_id."/".date("Y-m-d");
 
 	if (!file_exists($target_dir)) {
 
@@ -35,15 +37,17 @@
 
 		$insert_query = "INSERT INTO `recordings`
 		(
+			`name`,
 			to_squad_id,
 			from_rapper_id,
 			to_rapper_id,
 			recording_url
 		) VALUES (
+			'$name',
 			'$to_squad_id',
 			'$from_rapper_id',
 			'$to_rapper_id',
-			'$target_file'
+			'http://127.0.0.1/rappucino/$target_file'
 		)";
 
 		if ($result = $conn->query($insert_query)) {
