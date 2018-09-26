@@ -1,6 +1,6 @@
 <?php
 
-    require_once('functions/rappers.php');
+    require_once('functions/get/rappers.php');
 
     $function = isset($_GET['function']) ? $_GET['function'] : '';
 

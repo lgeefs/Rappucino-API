@@ -1,6 +1,6 @@
 <?php
 
-    require_once('functions/squads.php');
+    require_once('functions/get/squads.php');
 
     $function = isset($_GET['function']) ? $_GET['function'] : '';
 

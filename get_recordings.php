@@ -1,6 +1,6 @@
 <?php
 
-    require_once('functions/recordings.php');
+    require_once('functions/get/recordings.php');
 
     $function = isset($_GET['function']) ? $_GET['function'] : '';
 
