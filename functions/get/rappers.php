@@ -8,6 +8,10 @@
         return get_rappers(" WHERE id='$id'");
     }
 
+    function get_rapper_from_handle($handle) {
+        return get_rappers(" WHERE handle='$handle'");
+    }
+
     function get_rappers_from_squad_id($squad_id) {
         return get_rappers(" WHERE id IN (SELECT rapper_id FROM squad_rappers WHERE squad_id='$squad_id')");
     }

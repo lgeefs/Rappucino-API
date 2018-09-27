@@ -12,6 +12,10 @@
         return get_squads(" WHERE id IN (SELECT squad_id FROM squad_rappers WHERE rapper_id='$rapper_id')");
     }
 
+    function get_squad_from_name($name) {
+        return get_squads(" WHERE name='$name'");
+    }
+
     function get_squads_from_query($search_term) {
         return get_squads(" WHERE name LIKE '%".$search_term."%'");
     }
